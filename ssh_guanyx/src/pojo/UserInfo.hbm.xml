@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+	<class name="pojo.UserInfo" table="TB_UserInfo"><!-- table value值是表名 -->
+		<!--<cache usage="read-write"/> 默认值只读  之前没有-->
+		<id name="UserId" column="UserId">
+			<generator class="native">
+			</generator>
+			  <!-- 自动生成 编号 从1 开始 -->
+		</id>
+		
+		<property name="UserName" type="java.lang.String" column="UserName" not-null="true"/>
+		<property name="PassWord" type="java.lang.String" column="PassWord" not-null="true"/>
+		<property name="Sex" type="java.lang.String" column="Sex" not-null="true"/>
+		<property name="PhoneNumber" type="java.lang.String" column="PhoneNumber" not-null="true"/>
+		<property name="Email" type="java.lang.String" column="Email" not-null="true"/>
+		<property name="Address" type="java.lang.String" column="Address" />
+		<property name="Authority" type="java.lang.String" column="Authority" />
+		<property name="UpdateUserId" type="java.lang.Integer" column="UpdateUserId" />
+		<property name="UpdateDatetime" type="java.util.Date" column="UpdateDatetime" />
+		<property name="CreateUserId" type="java.lang.Integer" column="CreateUserId" />
+		<property name="CreateDatetime" type="java.util.Date" column="CreateDatetime" />
+	</class>
+
+</hibernate-mapping>

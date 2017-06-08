@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+	<class name="pojo.LogInfo" table="TB_LogInfo"><!-- table value值是表名 -->
+		<id name="LogId" column="LogId">
+			<generator class="native">
+				 <param name="sequence">logidSeq</param>
+			</generator>
+		</id>
+		<property name="FunctionId" type="java.lang.String" column="FunctionId" not-null="true"/>
+		<property name="LogCommant" type="java.lang.String" column="LogCommant" not-null="true"/>
+		<property name="UpdateUserId" type="java.lang.Integer" column="UpdateUserId" />
+		<property name="UpdateDatetime" type="java.util.Date" column="UpdateDatetime" />
+		<property name="CreateUserId" type="java.lang.Integer" column="CreateUserId" />
+		<property name="CreateDatetime" type="java.util.Date" column="CreateDatetime" />
+		
+	</class>
+</hibernate-mapping>

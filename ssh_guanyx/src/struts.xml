@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+        "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+	<constant name="struts.multipart.maxSize" value="10485760"/>
+    <package name="default" namespace="/" extends="json-default">
+        <action name="login_*" class = "loginaction" method="{1}">
+            <result name = "success" type="redirectAction">
+            	<param name="actionName">userInfo_allUserInfo.action</param>
+            	<param name="namespace">/</param>
+            </result>  
+            <result name = "input">/login.jsp</result>
+        </action>
+		<action name="register" class = "registeraction">
+            <result name = "success">/login.jsp</result>  
+            <result name = "input">/register.jsp</result>
+        </action>
+        <action name="userInfo_*" class = "userInfoaction" method="{1}">
+            <result name = "success">/userInfo.jsp</result>
+            <result name = "input">/register.jsp</result>
+            <result name = "update1">/updateUserInfo.jsp</result>
+            <result name = "update2" type="redirectAction">
+            	<param name="actionName">userInfo_allUserInfo.action</param>
+            	<param name="namespace">/</param>
+            </result>  
+            <result name = "delectUserInfo" type="redirectAction">
+            	<param name="actionName">userInfo_allUserInfo.action</param>
+            	<param name="namespace">/</param>
+            </result>  
+            <result name = "registerUserInfo" type="redirectAction">
+            	<param name="actionName">userInfo_allUserInfo.action</param>
+            	<param name="namespace">/</param>
+            </result> 
+            <result name="excel" type="stream">
+              <param name="contentType">application/vnd.ms-excel</param>    <!-- 注意这里的ContentType -->
+              <param name="inputName">excelStream</param>                   <!-- 这里需要和Action里的变量名一致 -->
+              <param name="contentDisposition">filename="UserInfodownload.xls"</param> <!-- 下载文件的名字 -->
+              <param name="bufferSize">10485760</param>  <!-- 下载文件的大小 10485760=10M -->
+            </result> 
+        </action>
+        <action name="LogInfo_*" class = "LogInfoaction" method="{1}">
+            <result type="json">
+				<param name="root">list</param>
+			</result>
+			<result name="a">/loginfo.jsp</result>
+        </action>
+	</package>
+</struts>

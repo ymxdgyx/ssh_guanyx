@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+    	http://www.springframework.org/schema/aop 
+    	http://www.springframework.org/schema/aop/spring-aop-4.1.xsd
+    	http://www.springframework.org/schema/tx 
+    	http://www.springframework.org/schema/tx/spring-tx-4.1.xsd
+    	http://www.springframework.org/schema/task 
+    	http://www.springframework.org/schema/task/spring-task-4.1.xsd
+    	http://www.springframework.org/schema/context 
+    	http://www.springframework.org/schema/context/spring-context-4.1.xsd">
+
+
+	<!-- 配置数据源 -->
+	<bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource"
+		destroy-method="close">
+		<property name="driverClassName" value="oracle.jdbc.driver.OracleDriver"></property>
+		<property name="url" value="jdbc:oracle:thin:@localhost:1521:orcl"></property>
+		<property name="username" value="scott"></property>
+		<property name="password" value="123"></property>
+	</bean>
+	<!-- 配置sessionfactory -->
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
+		<property name="dataSource" ref="dataSource"></property>
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">
+					org.hibernate.dialect.OracleDialect
+				</prop>
+				<prop key="hibernate.show_sql">
+					true
+				</prop>
+				<prop key="hibernate.hbm2ddl.auto">
+					update
+				</prop>
+			</props>
+		</property>
+		<property name="mappingResources">
+			<list>
+				<value>pojo/UserInfo.hbm.xml</value>
+				<value>pojo/LogInfo.hbm.xml</value>
+				<value>pojo/Accounting.hbm.xml</value>
+			</list>
+		</property>
+	</bean>
+
+<!-- 	Hibernate事务管理器 -->
+	<bean id="txManager"
+		class="org.springframework.orm.hibernate5.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+<!-- 	事务增强  -->
+	<tx:advice id="txAdvice" transaction-manager="txManager">
+		<tx:attributes>
+			<tx:method name="get*" read-only="true" />
+			<tx:method name="*" />
+		</tx:attributes>
+	</tx:advice>
+
+	<!-- 事务切面 --> 
+	<aop:config>
+		<aop:pointcut expression="execution(* Dao.*.*(..))"
+			id="txMethods" />
+		<aop:advisor advice-ref="txAdvice" pointcut-ref="txMethods" />
+	</aop:config>
+
+<!-- 	日志切面 -->
+  	<aop:config>
+  		
+  		<aop:pointcut expression="execution(* Dao.*.add*(..))" id="add"/>
+  		<aop:pointcut expression="execution(* Dao.*.delete*(..))" id="delete"/>
+  		<aop:pointcut expression="execution(* Dao.*.update*(..))" id="update"/>
+  		<aop:aspect id="log" ref="Log">
+  			<aop:before method="add" pointcut-ref="add"/>
+  			<aop:before method="delete" pointcut-ref="delete"/>
+  			<aop:before method="update" pointcut-ref="update"/>
+  		</aop:aspect>
+  	</aop:config>
+
+	<bean id="loginaction" class="Action.login" scope="prototype">
+		<property name="uis" ref="UserInfoService"></property>
+	</bean>
+	<bean id="userInfoaction" class="Action.userInfo" scope="prototype">
+		<property name="uis" ref="UserInfoService"></property>
+	</bean>
+	<bean id="LogInfoaction" class="Action.LogInfo" scope="prototype">
+		<property name="lis" ref="LogInfoService"></property>
+	</bean>
+	
+
+	<bean id="UserInfo" class="pojo.UserInfo" scope="prototype"></bean>
+	<bean id="LogInfo" class="pojo.LogInfo" scope="prototype"></bean>
+	<bean id="Accounting" class="pojo.Accounting" scope="prototype"></bean>
+
+	<bean id="UserInfoService" class="Service.UserInfoService">
+		<property name="uid" ref="UserInfoDao"></property>
+	</bean>
+	<bean id="LogInfoService" class="Service.LogInfoService">
+		<property name="lid" ref="LogInfoDao"></property>
+	</bean>
+
+	<bean id="UserInfoDao" class="Dao.UserInfoDao">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+
+	<bean id="LogInfoDao" class="Dao.LogInfoDao">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+
+	<bean id="Log" class="Log.Log" scope="prototype">
+		<property name="lis" ref="LogInfoService"></property>
+	</bean>
+
+</beans>
